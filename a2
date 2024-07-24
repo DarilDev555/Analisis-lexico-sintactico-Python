@@ -1,0 +1,31 @@
+Robot r1
+Robot r2
+Robot roboto
+
+r1.inicio
+r1.velocidad = 1
+r1.base = 100
+r2.base = 50
+r1.garra = 50
+r1.garra = 90
+r1.repetir = 20
+r1.detener
+
+r2.inicio
+r2.velocidad = 1
+r2.base = 100
+r2.base = 50
+r2.garra = 50
+r2.garra = 90
+r2.repetir = 20
+r2.detener
+
+roboto.inicio
+roboto.velocidad = 1
+roboto.base = 100
+roboto.base = 50
+roboto.garra = 50
+roboto.garra = 90
+roboto.repetir = 20
+roboto.detener
+

@@ -1,45 +1,40 @@
 import ply.lex as lex
+from prettytable import PrettyTable
 
 # resultado del analisis
 resultado_lexema = []
+estado = True
+lineaError = 0
 
+# Palabras Reservadas
 reservada = (
-    # Palabras Reservadas
     'INCLUDE',
     'USING',
     'NAMESPACE',
     'STD',
     'COUT',
     'CIN',
-   'GET',
-   'CADENA',
-  'RETURN',
-   'VOID',
+    'GET',
+    'CADENA',
+    'RETURN',
+    'VOID',
     'INT',
     'ENDL',
+    'ROBOT',  # Añadido Robot
 )
+
 tokens = reservada + (
     'IDENTIFICADOR',
     'ENTERO',
     'ASIGNAR',
-
     'SUMA',
     'RESTA',
     'MULT',
     'DIV',
     'POTENCIA',
     'MODULO',
-
-   'MINUSMINUS',
-   'PLUSPLUS',
-
-    #Condiones
-   'SI',
-    'SINO',
-    #Ciclos
-   'MIENTRAS',
-   'PARA',
-    #logica
+    'MINUSMINUS',
+    'PLUSPLUS',
     'AND',
     'OR',
     'NOT',
@@ -49,43 +44,37 @@ tokens = reservada + (
     'MAYORIGUAL',
     'IGUAL',
     'DISTINTO',
-    # Symbolos
     'NUMERAL',
-
     'PARIZQ',
     'PARDER',
     'CORIZQ',
     'CORDER',
     'LLAIZQ',
     'LLADER',
-    
-    # Otros
     'PUNTOCOMA',
     'COMA',
     'COMDOB',
-    'MAYORDER', #>>
-    'MAYORIZQ', #<<
+    'MAYORDER',
+    'MAYORIZQ',
+    'PUNTO',
+        # Añadido PUNTO
 )
 
-# Reglas de Expresiones Regualres para token de Contexto simple
-
+# Reglas de Expresiones Regulares para token de Contexto simple
 t_SUMA = r'\+'
 t_RESTA = r'-'
 t_MINUSMINUS = r'\-\-'
-# t_PUNTO = r'\.'
 t_MULT = r'\*'
 t_DIV = r'/'
 t_MODULO = r'\%'
 t_POTENCIA = r'(\*{2} | \^)'
-
 t_ASIGNAR = r'='
-# Expresiones Logicas
 t_AND = r'\&\&'
 t_OR = r'\|{2}'
 t_NOT = r'\!'
 t_MENORQUE = r'<'
 t_MAYORQUE = r'>'
-t_PUNTOCOMA = ';'
+t_PUNTOCOMA = r';'
 t_COMA = r','
 t_PARIZQ = r'\('
 t_PARDER = r'\)'
@@ -94,8 +83,11 @@ t_CORDER = r'\]'
 t_LLAIZQ = r'{'
 t_LLADER = r'}'
 t_COMDOB = r'\"'
+t_PUNTO = r'\.'  # Regla para PUNTO
 
-
+def t_ROBOT(t):
+    r'Robot'
+    return t
 
 def t_INCLUDE(t):
     r'include'
@@ -208,20 +200,34 @@ def t_comments(t):
     print("Comentario de multiple linea")
 
 def t_comments_ONELine(t):
-     r'\/\/(.)*\n'
-     t.lexer.lineno += 1
-     print("Comentario de una linea")
+        r'\/\/(.)*\n'
+        t.lexer.lineno += 1
+        print("Comentario de una linea")
 t_ignore =' \t'
 
-def t_error( t):
-    global resultado_lexema
-    estado = "** Token no valido en la Linea {:4} Valor {:16} Posicion {:4}".format(str(t.lineno), str(t.value),
-                                                                      str(t.lexpos))
-    resultado_lexema.append(estado)
+# Variable global para almacenar el último token inválido
+ultimo_error = None
+
+def t_error(t):
+    global ultimo_error, lineaError
+    global estado
+    # Formatear los datos del token inválido
+    if estado:
+        ultimo_error = " Error Lexico token no valido en Linea {:4} Valor {:16} ".format(str(t.lineno), str(t.value[0]))
+        lineaError = int(t.lineno)
+        estado = False
+    # Saltar el token inválido
     t.lexer.skip(1)
 
 # Prueba de ingreso
 def prueba(data):
+    errorEstado = True
+    global estado
+    estado = True
+    global ultimo_error, lineaError
+    ultimo_error = ""
+    tabla2 = PrettyTable()
+    tabla2.field_names = ["Linea", "Tipo", "Valor", "Posicion"]
     global resultado_lexema
 
     analizador = lex.lex()
@@ -232,16 +238,19 @@ def prueba(data):
         tok = analizador.token()
         if not tok:
             break
-        # print("lexema de "+tok.type+" valor "+tok.value+" linea "tok.lineno)
-        estado = "Linea {:4} Tipo {:16} Valor {:16} Posicion {:4}".format(str(tok.lineno),str(tok.type) ,str(tok.value), str(tok.lexpos) )
-        resultado_lexema.append(estado)
-    return resultado_lexema
+        if tok.type in reservada or tok.type in tokens:
+            try:
+                nada = "Linea {:4} Tipo {:16} Valor {:16} Posicion {:4}".format(str(tok.lineno), str(tok.type), str(tok.value), str(tok.lexpos))
+            except:
+                continue
+    return ultimo_error, lineaError
 
- # instanciamos el analizador lexico
+# instanciamos el analizador lexico
 analizador = lex.lex()
 
 if __name__ == '__main__':
     while True:
         data = input("ingrese: ")
-        prueba(data)
-        print(resultado_lexema)
+        resultado_lexema = prueba(data)
+        for item in resultado_lexema:
+            print(item)

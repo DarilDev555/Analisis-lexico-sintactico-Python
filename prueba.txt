@@ -1,0 +1,7 @@
+Robot r1
+Robot r1.
+
+r1.base = 100
+.base = 50
+r1.garra = 50
+r1.garra 90

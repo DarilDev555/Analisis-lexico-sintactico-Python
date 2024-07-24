@@ -2,24 +2,44 @@ import ply.yacc as yacc
 from analizador_lexico import tokens
 from analizador_lexico import analizador
 
-# resultado del analisis
+# Resultado del análisis
 resultado_gramatica = []
+c = 0
+errorLineas = []
 
-precedence = (
-    ('right','ASIGNAR'),
+precedence = (  
+    ('right', 'ASIGNAR'),
     ('left', 'SUMA', 'RESTA'),
     ('left', 'MULT', 'DIV'),
     ('right', 'UMINUS'),
 )
+
 nombres = {}
 
-def p_declaracion_asignar(t):
-    'declaracion : IDENTIFICADOR ASIGNAR expresion PUNTOCOMA'
-    nombres[t[1]] = t[3]
+def p_declaracion_robot(t):
+    'declaracion : ROBOT IDENTIFICADOR'
+    nombres[t[2]] = {'base': None, 'cuerpo': None, 'garra': None, 'inicio': None, 'repetir': None, 'velocidad':None,'detener': None}
+    t[0] = t[2]
 
+def p_asignar_inicio_detener(t):
+    'declaracion : IDENTIFICADOR PUNTO IDENTIFICADOR'
+    if t[1] in nombres and t[3] in nombres[t[1]]:
+        nombres[t[1]][t[3]] = None
+        
+    else:
+        print(f"Error: {t[1]} no tiene el atributo {t[3]} .")
+
+def p_asignacion_atributo(t):
+    'declaracion : IDENTIFICADOR PUNTO IDENTIFICADOR ASIGNAR ENTERO'
+    if t[1] in nombres and t[3] in nombres[t[1]]:
+        nombres[t[1]][t[3]] = t[5]
+    else:
+        print(f"Error: {t[1]} no tiene el atributo {t[3]}")
+
+
+        
 def p_declaracion_expr(t):
     'declaracion : expresion'
-    # print("Resultado: " + str(t[1]))
     t[0] = t[1]
 
 def p_expresion_operaciones(t):
@@ -30,7 +50,6 @@ def p_expresion_operaciones(t):
                 |   expresion DIV expresion
                 |   expresion POTENCIA expresion
                 |   expresion MODULO expresion
-
     '''
     if t[2] == '+':
         t[0] = t[1] + t[3]
@@ -43,11 +62,7 @@ def p_expresion_operaciones(t):
     elif t[2] == '%':
         t[0] = t[1] % t[3]
     elif t[2] == '**':
-        i = t[3]
-        t[0] = t[1]
-        while i > 1:
-            t[0] *= t[1]
-            i -= 1
+        t[0] = t[1] ** t[3]
 
 def p_expresion_uminus(t):
     'expresion : RESTA expresion %prec UMINUS'
@@ -60,7 +75,7 @@ def p_expresion_grupo(t):
                 | CORIZQ expresion CORDER
     '''
     t[0] = t[2]
-# sintactico de expresiones logicas
+
 def p_expresion_logicas(t):
     '''
     expresion   :  expresion MENORQUE expresion 
@@ -80,7 +95,7 @@ def p_expresion_logicas(t):
     elif t[2] == ">": t[0] = t[1] > t[3]
     elif t[2] == "<=": t[0] = t[1] <= t[3]
     elif t[2] == ">=": t[0] = t[1] >= t[3]
-    elif t[2] == "==": t[0] = t[1] is t[3]
+    elif t[2] == "==": t[0] = t[1] == t[3]
     elif t[2] == "!=": t[0] = t[1] != t[3]
     elif t[3] == "<":
         t[0] = t[2] < t[4]
@@ -91,13 +106,10 @@ def p_expresion_logicas(t):
     elif t[3] == ">=":
         t[0] = t[2] >= t[4]
     elif t[3] == "==":
-        t[0] = t[2] is t[4]
+        t[0] = t[2] == t[4]
     elif t[3] == "!=":
         t[0] = t[2] != t[4]
 
-    # print('logica ',[x for x in t])
-
-# gramatica de expresiones booleanadas
 def p_expresion_booleana(t):
     '''
     expresion   :   expresion AND expresion 
@@ -112,15 +124,13 @@ def p_expresion_booleana(t):
     elif t[2] == "||":
         t[0] = t[1] or t[3]
     elif t[2] == "!":
-        t[0] =  t[1] is not t[3]
+        t[0] = not t[3]
     elif t[3] == "&&":
         t[0] = t[2] and t[4]
     elif t[3] == "||":
         t[0] = t[2] or t[4]
     elif t[3] == "!":
-        t[0] =  t[2] is not t[4]
-
-
+        t[0] = not t[4]
 
 def p_expresion_numero(t):
     'expresion : ENTERO'
@@ -139,33 +149,31 @@ def p_expresion_nombre(t):
         t[0] = 0
 
 def p_error(t):
-    global resultado_gramatica
+    global resultado_gramatica, c
     if t:
-        resultado = "Error sintactico de tipo {} en el valor {}".format( str(t.type),str(t.value))
+        resultado = "Error sintáctico: " + str(t.type) + " en la linea " + str(c) + " en el valor " + str(t.value)
         print(resultado)
     else:
-        resultado = "Error sintactico {}".format(t)
+        resultado = "Error en la linea " + str(c)
         print(resultado)
+    errorLineas.append(c)
     resultado_gramatica.append(resultado)
 
-
-
-# instanciamos el analizador sistactico
+# Instanciamos el analizador sintáctico
 parser = yacc.yacc()
 
 def prueba_sintactica(data):
-    global resultado_gramatica
+    global resultado_gramatica, c, errorLineas
     resultado_gramatica.clear()
+    c = 0  # Inicializamos c antes de comenzar
 
     for item in data.splitlines():
+        c += 1
         if item:
             gram = parser.parse(item)
-            if gram:
-                resultado_gramatica.append(str(gram))
-        else: print("data vacia")
-
-    print("result: ", resultado_gramatica)
-    return resultado_gramatica
+        else:
+            continue
+    return resultado_gramatica, errorLineas
 
 if __name__ == '__main__':
     while True:
@@ -173,9 +181,7 @@ if __name__ == '__main__':
             s = input(' ingresa dato >>> ')
         except EOFError:
             continue
-        if not s: continue
-
-        # gram = parser.parse(s)
-        # print("Resultado ", gram)
+        if not s:
+            continue
 
         prueba_sintactica(s)
