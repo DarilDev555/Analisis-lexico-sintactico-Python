@@ -1,0 +1,14 @@
+Robot r1
+
+r1.inicio
+r1.velocidad = 1
+r1.base = 360
+r1.base = 180
+r1.cuerpo = 90
+r1.cuerpo = 0
+r1.garra = 180
+r1.garra = 90
+
+
+r1.repetir = 2
+r1.detener

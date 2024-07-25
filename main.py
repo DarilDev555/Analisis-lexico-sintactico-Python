@@ -14,6 +14,7 @@ from PyQt5.QtCore import QSize, Qt, QRect
 from PyQt5.QtGui import QColor, QPainter, QTextFormat
 from PyQt5.QtWidgets import QPlainTextEdit, QWidget, QMainWindow, QFileDialog, QApplication
 import subprocess
+import shutil
 
 class Simbolo:
     def __init__(self, nombre, tipo, valor, parametros, num_parametros, valor_maximo, valor_minimo):
@@ -229,6 +230,7 @@ class Main(QMainWindow):
             datos = self.home.tx_ingreso.toPlainText().strip()
             intermediate_code = self.generate_intermediate_code(datos)
             self.print_intermediate_code(intermediate_code)
+            # 
             data_section = self.generate_data_section(intermediate_code)
             code_section = """
 CODE_SEG SEGMENT
@@ -248,7 +250,11 @@ END  START
                 file.write(data_section)
                 file.write(code_section)
                 
+            shutil.copy("output.asm", "C:/DOSBox-0.73/Tasm/codigo.asm")
+                
+            p = subprocess.run("C:/DOSBox-0.73/dosbox.exe")
             
+            exit_code = p.returncode
 
             print("Código ensamblador generado en output.asm")
 
@@ -557,6 +563,7 @@ END  START
                     continue
                 elif op == "Cargar":
                     if res == "ax":
+                        ax = 0
                         ax = int(dir1)
                 elif op == "Llamar":
                     if dir1 == "velocidad ax":
@@ -579,6 +586,7 @@ END  START
                                 delays += 1
                                 estado_motor_base = self.cambiar_estado(estado_motor_base)
                             estado_grados_base = ax
+                            ax = 0
                         elif aux < 0:
                             giros = (aux * -1) // 45
                             for _ in range(giros):
@@ -590,105 +598,69 @@ END  START
                                 delays += 1
                                 estado_motor_base = self.cambiar_estado_reversa(estado_motor_base)
                             estado_grados_base = ax
+                            ax = 0
                     elif dir1 == "cuerpo":
                         aux = ax - estado_grados_cuerpo
                         print(f'Cuerpo = {estado_grados_cuerpo}')
                         if aux == 0:
                             continue
                         elif aux > 0:
-                            if estado_grados_cuerpo + aux <= 90:
-                                giros = aux // 45
-                                for _ in range(giros):
-                                    estado_grados_cuerpo += 45
-                                    asm_code += "MOV DX, PORTB\n"
-                                    asm_code += f"MOV CX, 0ffffh\ndelay_{delays}:\nLOOP delay_{delays}\n"
-                                    asm_code += self.cuerpo(estado_motor_cuerpo) + "\n"
-                                    NE += 1
-                                    delays += 1
-                                    estado_motor_cuerpo = self.cambiar_estado(estado_motor_cuerpo)
-                            estado_grados_cuerpo = min(estado_grados_cuerpo + aux, 90)
+                            giros = aux // 45
+                            for _ in range(giros):
+                                estado_grados_cuerpo += 45
+                                asm_code += "MOV DX, PORTB\n"
+                                asm_code += f"MOV CX, 0ffffh\ndelay_{delays}:\nLOOP delay_{delays}\n"
+                                asm_code += self.cuerpo(estado_motor_cuerpo) + "\n"
+                                NE += 1
+                                delays += 1
+                                estado_motor_cuerpo = self.cambiar_estado(estado_motor_cuerpo)
+                            estado_grados_cuerpo = ax
+                            ax = 0
                         elif aux < 0:
-                            if estado_grados_cuerpo + aux >= 0:
-                                giros = (aux * -1) // 45
-                                for _ in range(giros):
-                                    estado_grados_cuerpo -= 45
-                                    asm_code += "MOV DX, PORTB\n"
-                                    asm_code += f"MOV CX, 0ffffh\ndelay_{delays}:\nLOOP delay_{delays}\n"
-                                    asm_code += self.cuerpo_r(estado_motor_cuerpo) + "\n"
-                                    NE += 1
-                                    delays += 1
-                                    estado_motor_cuerpo = self.cambiar_estado_reversa(estado_motor_cuerpo)
-                            estado_grados_cuerpo = max(estado_grados_cuerpo + aux, 0)
+                            giros = (aux * -1) // 45
+                            for _ in range(giros):
+                                estado_grados_cuerpo -= 45
+                                asm_code += "MOV DX, PORTB\n"
+                                asm_code += f"MOV CX, 0ffffh\ndelay_{delays}:\nLOOP delay_{delays}\n"
+                                asm_code += self.cuerpo_r(estado_motor_cuerpo) + "\n"
+                                NE += 1
+                                delays += 1
+                                estado_motor_cuerpo = self.cambiar_estado_reversa(estado_motor_cuerpo)
+                            estado_grados_cuerpo = ax
+                            ax = 0
                     elif dir1 == "garra":
                         aux = ax - estado_grados_garra
                         print(f'Garra = {estado_grados_garra}')
                         if aux == 0:
                             continue
                         elif aux > 0:
-                            if estado_grados_garra + aux <= 180:
-                                giros = aux // 45
-                                for _ in range(giros):
-                                    estado_grados_garra += 45
-                                    asm_code += "MOV DX, PORTC\n"
-                                    asm_code += f"MOV CX, 0ffffh\ndelay_{delays}:\nLOOP delay_{delays}\n"
-                                    asm_code += self.garra(estado_motor_garra) + "\n"
-                                    NE += 1
-                                    delays += 1
-                                    estado_motor_garra = self.cambiar_estado(estado_motor_garra)
-                            estado_grados_garra = min(estado_grados_garra + aux, 180)
+                            giros = aux // 45
+                            for _ in range(giros):
+                                estado_grados_garra += 45
+                                asm_code += "MOV DX, PORTC\n"
+                                asm_code += f"MOV CX, 0ffffh\ndelay_{delays}:\nLOOP delay_{delays}\n"
+                                asm_code += self.garra(estado_motor_garra) + "\n"
+                                NE += 1
+                                delays += 1
+                                estado_motor_garra = self.cambiar_estado(estado_motor_garra)
+                            estado_grados_garra = ax
+                            ax = 0
                         elif aux < 0:
-                            if estado_grados_garra + aux >= 0:
-                                giros = (aux * -1) // 45
-                                for _ in range(giros):
-                                    estado_grados_garra -= 45
-                                    asm_code += "MOV DX, PORTC\n"
-                                    asm_code += f"MOV CX, 0ffffh\ndelay_{delays}:\nLOOP delay_{delays}\n"
-                                    asm_code += self.garra_r(estado_motor_garra) + "\n"
-                                    NE += 1
-                                    delays += 1
-                                    estado_motor_garra = self.cambiar_estado_reversa(estado_motor_garra)
-                            estado_grados_garra = max(estado_grados_garra + aux, 0)
+                            giros = (aux * -1) // 45
+                            for _ in range(giros):
+                                estado_grados_garra -= 45
+                                asm_code += "MOV DX, PORTC\n"
+                                asm_code += f"MOV CX, 0ffffh\ndelay_{delays}:\nLOOP delay_{delays}\n"
+                                asm_code += self.garra_r(estado_motor_garra) + "\n"
+                                NE += 1
+                                delays += 1
+                                estado_motor_garra = self.cambiar_estado_reversa(estado_motor_garra)
+                            estado_grados_garra = ax
+                            ax = 0
                     elif dir1 == "repetir":
                         asm_code += "dec bx\ncmp bx,0d\njne inicio\n"
                 else:
                     asm_code += f"; Unknown operation: {op}\n"
-            # Regresar motores a su estado inicial
-            
-            for _ in range(9):
-                if estado_grados_base > 0:
-                    estado_grados_base -= 45
-                    asm_code += "MOV DX, PORTA\n"
-                    asm_code += f"MOV CX, 0ffffh\ndelay_{delays}:\nLOOP delay_{delays}\n"
-                    asm_code += self.base_r(estado_motor_base) + "\n"
-                    NE += 1
-                    delays += 1
-                    estado_motor_base = self.cambiar_estado_reversa(estado_motor_base)
-            
-
-            
-            for _ in range(9):
-                if estado_grados_cuerpo > 0:    
-                    estado_grados_cuerpo -= 45
-                    asm_code += "MOV DX, PORTB\n"
-                    asm_code += f"MOV CX, 0ffffh\ndelay_{delays}:\nLOOP delay_{delays}\n"
-                    asm_code += self.cuerpo_r(estado_motor_cuerpo) + "\n"
-                    NE += 1
-                    delays += 1
-                    estado_motor_cuerpo = self.cambiar_estado_reversa(estado_motor_cuerpo)
-            
-
-            
-            for _ in range(9):
-                if estado_grados_garra > 0:
-                    estado_grados_garra -= 45
-                    asm_code += "MOV DX, PORTC\n"
-                    asm_code += f"MOV CX, 0ffffh\ndelay_{delays}:\nLOOP delay_{delays}\n"
-                    asm_code += self.garra_r(estado_motor_garra) + "\n"
-                    NE += 1
-                    delays += 1
-                    estado_motor_garra = self.cambiar_estado_reversa(estado_motor_garra)        
-            
-
         return asm_code
 
 
