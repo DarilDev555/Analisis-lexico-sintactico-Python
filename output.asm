@@ -20,53 +20,53 @@ LOOP delay_0
  
 MOV al, 00001100b
 OUT DX,AL
-MOV DX, PORTA
+MOV DX, PORTB
 MOV CX, 0ffffh
 delay_1:
 LOOP delay_1
  
-MOV al, 00000110b
+MOV al, 00001100b
 OUT DX,AL
-MOV DX, PORTA
+MOV DX, PORTB
 MOV CX, 0ffffh
 delay_2:
 LOOP delay_2
  
-MOV al, 00000011b
+MOV al, 00000110b
 OUT DX,AL
-MOV DX, PORTA
+MOV DX, PORTC
 MOV CX, 0ffffh
 delay_3:
 LOOP delay_3
- 
-MOV al, 00001001b
+
+MOV al, 00001100b
 OUT DX,AL
 MOV DX, PORTA
 MOV CX, 0ffffh
 delay_4:
 LOOP delay_4
  
-MOV al, 00001100b
+MOV al, 00001001b
 OUT DX,AL
-MOV DX, PORTA
+MOV DX, PORTB
 MOV CX, 0ffffh
 delay_5:
 LOOP delay_5
  
-MOV al, 00000110b
+MOV al, 00001100b
 OUT DX,AL
-MOV DX, PORTA
+MOV DX, PORTB
 MOV CX, 0ffffh
 delay_6:
 LOOP delay_6
  
-MOV al, 00001100b
+MOV al, 00001001b
 OUT DX,AL
-MOV DX, PORTA
+MOV DX, PORTC
 MOV CX, 0ffffh
 delay_7:
 LOOP delay_7
- 
+
 MOV al, 00001001b
 OUT DX,AL
 MOV DX, PORTA
@@ -74,189 +74,56 @@ MOV CX, 0ffffh
 delay_8:
 LOOP delay_8
  
-MOV al, 00000011b
+MOV al, 00001100b
 OUT DX,AL
-MOV DX, PORTA
+MOV DX, PORTB
 MOV CX, 0ffffh
 delay_9:
 LOOP delay_9
  
-MOV al, 00000110b
+MOV al, 00001100b
 OUT DX,AL
-MOV DX, PORTA
+MOV DX, PORTB
 MOV CX, 0ffffh
 delay_10:
 LOOP delay_10
  
-MOV al, 00001100b
+MOV al, 00000110b
 OUT DX,AL
-MOV DX, PORTB
+MOV DX, PORTC
 MOV CX, 0ffffh
 delay_11:
 LOOP delay_11
- 
+
 MOV al, 00001100b
 OUT DX,AL
-MOV DX, PORTB
+MOV DX, PORTA
 MOV CX, 0ffffh
 delay_12:
 LOOP delay_12
  
-MOV al, 00000110b
+MOV al, 00001001b
 OUT DX,AL
-MOV DX, PORTC
+MOV DX, PORTB
 MOV CX, 0ffffh
 delay_13:
 LOOP delay_13
-
+ 
 MOV al, 00001100b
 OUT DX,AL
-MOV DX, PORTC
+MOV DX, PORTB
 MOV CX, 0ffffh
 delay_14:
 LOOP delay_14
-
-MOV al, 00000110b
+ 
+MOV al, 00001001b
 OUT DX,AL
 MOV DX, PORTC
 MOV CX, 0ffffh
 delay_15:
 LOOP delay_15
 
-MOV al, 00000011b
-OUT DX,AL
-MOV DX, PORTC
-MOV CX, 0ffffh
-delay_16:
-LOOP delay_16
-
 MOV al, 00001001b
-OUT DX,AL
-MOV DX, PORTC
-MOV CX, 0ffffh
-delay_17:
-LOOP delay_17
-
-MOV al, 00000011b
-OUT DX,AL
-MOV DX, PORTC
-MOV CX, 0ffffh
-delay_18:
-LOOP delay_18
-
-MOV al, 00000110b
-OUT DX,AL
-MOV DX, PORTA
-MOV CX, 0ffffh
-delay_19:
-LOOP delay_19
- 
-MOV al, 00000110b
-OUT DX,AL
-MOV DX, PORTA
-MOV CX, 0ffffh
-delay_20:
-LOOP delay_20
- 
-MOV al, 00000011b
-OUT DX,AL
-MOV DX, PORTA
-MOV CX, 0ffffh
-delay_21:
-LOOP delay_21
- 
-MOV al, 00001001b
-OUT DX,AL
-MOV DX, PORTA
-MOV CX, 0ffffh
-delay_22:
-LOOP delay_22
- 
-MOV al, 00001100b
-OUT DX,AL
-MOV DX, PORTA
-MOV CX, 0ffffh
-delay_23:
-LOOP delay_23
- 
-MOV al, 00000110b
-OUT DX,AL
-MOV DX, PORTA
-MOV CX, 0ffffh
-delay_24:
-LOOP delay_24
- 
-MOV al, 00001100b
-OUT DX,AL
-MOV DX, PORTA
-MOV CX, 0ffffh
-delay_25:
-LOOP delay_25
- 
-MOV al, 00001001b
-OUT DX,AL
-MOV DX, PORTA
-MOV CX, 0ffffh
-delay_26:
-LOOP delay_26
- 
-MOV al, 00000011b
-OUT DX,AL
-MOV DX, PORTA
-MOV CX, 0ffffh
-delay_27:
-LOOP delay_27
- 
-MOV al, 00000110b
-OUT DX,AL
-MOV DX, PORTA
-MOV CX, 0ffffh
-delay_28:
-LOOP delay_28
- 
-MOV al, 00001100b
-OUT DX,AL
-MOV DX, PORTB
-MOV CX, 0ffffh
-delay_29:
-LOOP delay_29
- 
-MOV al, 00001100b
-OUT DX,AL
-MOV DX, PORTB
-MOV CX, 0ffffh
-delay_30:
-LOOP delay_30
- 
-MOV al, 00000110b
-OUT DX,AL
-MOV DX, PORTC
-MOV CX, 0ffffh
-delay_31:
-LOOP delay_31
-
-MOV al, 00000011b
-OUT DX,AL
-MOV DX, PORTC
-MOV CX, 0ffffh
-delay_32:
-LOOP delay_32
-
-MOV al, 00001001b
-OUT DX,AL
-MOV DX, PORTC
-MOV CX, 0ffffh
-delay_33:
-LOOP delay_33
-
-MOV al, 00000011b
-OUT DX,AL
-MOV DX, PORTC
-MOV CX, 0ffffh
-delay_34:
-LOOP delay_34
-
-MOV al, 00000110b
 OUT DX,AL
 
 CODE_SEG    ENDS

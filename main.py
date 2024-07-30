@@ -481,16 +481,16 @@ END  START
         elif estado_motor == estados[0]:
             return " \nMOV al, 00000110b\nOUT DX,AL"
         elif estado_motor == estados[1]:
-            return ""
+            return " \nMOV al, 00000011b\nOUT DX,AL"
         elif estado_motor == estados[2]:
-            return ""
+            return " \nMOV al, 00001001b\nOUT DX,AL"
         elif estado_motor == estados[3]:
-            return ""
+            return " \nMOV al, 00001100b\nOUT DX,AL"
         
     def cuerpo_r(self, estado_motor):
         estados = ["00001100b", "00000110b", "00000011b", "00001001b"]
         if estado_motor == "00000000b":
-            return " \nMOV al, 00000000b\nOUT DX,AL"
+            return " \nMOV al, 00001001b\nOUT DX,AL"
         elif estado_motor == estados[0]:
             return " \nMOV al, 00001001b\nOUT DX,AL"
         elif estado_motor == estados[1]:
@@ -498,7 +498,7 @@ END  START
         elif estado_motor == estados[2]:
             return " \nMOV al, 00000110b\nOUT DX,AL"
         elif estado_motor == estados[3]:
-            return " \nMOV al, 00000000b\nOUT DX,AL"
+            return " \nMOV al, 00000011b\nOUT DX,AL"
         
     def garra(self, estado_motor):
         estados = ["00001100b", "00000110b", "00000011b", "00001001b"]
